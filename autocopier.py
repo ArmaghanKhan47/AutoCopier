@@ -3,6 +3,7 @@
 # with the help of LogFile.txt.
 # This program is really helpful when you want to move files and forgot which files have been copied which are not.
 # This program is helpful for video / photo editors who constantly copy files from one device to another.
+# Place this program in Source Folder, Provide Destination Folder Full Address and LogFile.txt Full Address after that let the program do the magic
 import os, shutil, copy
 
 # Classes and Functions Definition Area Start
