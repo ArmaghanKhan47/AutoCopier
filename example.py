@@ -2,8 +2,10 @@ import autocopier
 
 obj = autocopier.AutoCopier()
 
-#if method return 0 it means operation is done no error occured duing execution
-#if method return -1 or -2 means invalid file name or address provided, no files copied or deleted.
+#Messages these method can return are following:
+#[0, "Operation Performed Successfully"]
+#[-1, "Invalid file name or address"]
+#[-2, "No Operation were performed"]
 
 #In both methods source is optional
 obj.copyFiles("Destination", "LogFile.txt")
