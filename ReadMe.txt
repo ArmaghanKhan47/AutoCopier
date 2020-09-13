@@ -1,5 +1,5 @@
 Execution Flow of this program if runned as script in cmd:
-[>] Do you want to Copy Files(copy) or Delete Files(del): -> They wants to know for what is being used for enter "copy" if you want to copy files, enter "del" if you want to delete files
+[>] Do you want to Copy Files(copy) or Delete Files(del): -> The program wants to know for what is being used for enter "copy" if you want to copy files, enter "del" if you want to delete files
 
 Case 1: you enter "copy" / you want to copy files
 [>] Enter Destination Folder Name: -> Enter the destination folder complete address if it is place in different place than program or enter folder name if both program and destination folder are in same directory
