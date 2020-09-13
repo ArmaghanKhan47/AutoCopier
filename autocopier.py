@@ -4,9 +4,15 @@
 # This program is really helpful when you want to move files and forgot which files have been copied which are not.
 # This program is helpful for video / photo editors who constantly copy files from one device to another.
 # Place this program in Source Folder or provide SourFolder Address, Provide Destination Folder Full Address and LogFile.txt Full Address after that let the program do the magic
-import os, shutil, copy
+import os, shutil, copy, sys
 
 # Private Classes and Functions Definition Area Start
+
+errorsList = [
+    [0, "Operation Performed Successfully"],
+    [-1, "Invalid file name or address"],
+    [-2, "No Operation were performed"]
+]
 
 class __LogFile__:
     #LogFile Class helps in performing the operations on logfile.txt
@@ -69,7 +75,7 @@ def __fileExtensionCheck__(name):
     # Function to check that file is of required extension : Boolean
     extension = os.path.splitext(name)[1]
     # change the extension or add more extension so program know which files are needed to be copied are not on the basis of extension.
-    if extension == ".mp4" or extension == ".jpg":
+    if extension in [".mp4", ".jpg"]:
         return True
     else:
         return False
@@ -77,11 +83,13 @@ def __fileExtensionCheck__(name):
 def __copyFile__(fileList, destination):
     # This function just copy files from one location to another without messing with the meta of files.
     if fileList != []:
+        counter = 1
         for fil in fileList:
             try:
                 shutil.copy2(fil, destination)
                 if __name__ == "__main__":
-                    print("[+] Copied {} to {}".format(fil, destination))
+                    print("[+] Copied {} to {} {}/{}".format(fil, destination, counter, len(fileList)))
+                    counter += 1
             except FileNotFoundError:
                 fileList.remove(fil)
                 print("[!] Couldn't find {}".format(fil))
@@ -90,7 +98,22 @@ def __copyFile__(fileList, destination):
         if __name__ == "__main__":
             print("[!] No File Copied")
         return None
-        
+    
+def __deleteFiles__(fileList):    
+    if fileList != None:
+        counter = 1
+        for x in fileList:
+            os.remove(x)
+            if __name__ == "__main__":
+                print("[+] Deleted {} {}/{}".format(x, counter, len(deletList)))
+                counter += 1
+        if __name__ != "__main__":
+            return errorsList[0]
+    else:
+        if __name__ == "__main__":
+            print("[!] No File(s) Deleted")
+        else:
+            return errorsList[2]
 # Private Classes and Functions Definition Area End
 
 # API Area Start
@@ -101,15 +124,15 @@ class AutoCopier:
     
     def copyFiles(self, destination, logFile, source = None):
         if (source is not None) and (not os.path.isdir(source)):
-            return -1
+            return errorsList[1]
         elif source is not None:
             os.chdir(source)
         if not os.path.isdir(destination):
-            return -1
+            return errorsList[1]
         
         logFileObj = __LogFile__(logFile)
         if not logFileObj.checkLogFileExist():
-            return -1
+            return errorsList[1]
         
         fileNames = os.listdir()
         # Filtering the files on the basis of extensions
@@ -122,30 +145,32 @@ class AutoCopier:
         # Log File being updated
         logFileObj.updateLogFile(copied)
         if copied is None:
-            return -2
+            return errorsList[2]
         else:
-            return 0
+            return errorsList[0]
     
     def deleteFiles(self, logFile, source = None):
         if (source is not None) and (not os.path.isdir(source)):
-            return -1
+            return errorsList[1]
         elif source is not None:
             os.chdir(source)
         
         logfile = __LogFile__(logFile)
         if not logfile.checkLogFileExist():
-            return -1
+            return errorsList[1]
         
         files = os.listdir()
         files = [fi for fi in files if __fileExtensionCheck__(fi)]
         deletList = logfile.commonFiles(files)
+        return __deleteFiles__(deletList)
+        """
         if deletList != None:
             for x in deletList:
                 os.remove(x)
             return 0
         else:
             return -1
-        
+        """
 # API Area End
        
 # Actual Program Execution happens here
@@ -171,7 +196,7 @@ if __name__ == "__main__":
         sourceFolder = input("[>] Enter Source Folder | Leave Empty if program placed in Source Folder: ")
         if not os.path.isdir(destinationFolder):
             print("[!] Please Provide Valid Directory Name / Address")
-            exit()
+            sys.exit()
         logFileAddress = input("[>] Enter Log File Name / Address if in different Directory: ")
         print("[+] Copying Files to : {}".format(destinationFolder))
         print("[+] Picking Up Log File : {}".format(logFileAddress))
@@ -179,7 +204,7 @@ if __name__ == "__main__":
         if sourceFolder != "":
             if not os.path.isdir(sourceFolder):
                 print("[!] Please Provide Valid Directory Name / Address")
-                exit()
+                sys.exit()
             os.chdir(sourceFolder)
             print('[+] Source Provided')
 
@@ -190,7 +215,7 @@ if __name__ == "__main__":
         logFileObj = __LogFile__(logFileAddress)
         if not logFileObj.checkLogFileExist():
             print("[!] Please Enter Valid Log File Name / Address")
-            exit()
+            sys.exit()
         # Getting list of files needed to be copied
         listt = logFileObj.filesNotInLog(fileNames)
         # Files are being copied
@@ -206,32 +231,20 @@ if __name__ == "__main__":
         if sourceFolder != "":
             if not os.path.isdir(sourceFolder):
                 print("[!] Please Provide Valid Directory Name / Address")
-                exit()
+                sys.exit()
             os.chdir(sourceFolder)
-            sourceBool = True
             print('[+] Source Provided')
         logFileAddress = input("[>] Enter Log File Name / Address if in different Directory: ")
         print("[+] Picking Up Log File : {}".format(logFileAddress))
         logFileObj = __LogFile__(logFileAddress)
         if not logFileObj.checkLogFileExist():
             print("[!] Please Enter Valid Log File Name / Address")
-            exit()
-        if sourceBool:
-            print("[+] Deleting Files from : {}".format(sourceFolder))
-        else:
-            print("[+] Deleting Files from : {}".format(os.getcwd()))
+            sys.exit()
+            
+        print("[+] Deleting Files from : {}".format(os.getcwd()))
         
         files = os.listdir()
         files = [fi for fi in files if __fileExtensionCheck__(fi)]
         deletList = logFileObj.commonFiles(files)
-        
-        if deletList != None:
-            for x in deletList:
-                os.remove(x)
-                print("[+] Deleted {}".format(x))
-        else:
-            print("[!] No File(s) Deleted")
-            
+        __deleteFiles__(deletList)
         input("[>] Operation Completed | Press Enter Key to terminate")
-        
-        
