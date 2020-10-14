@@ -4,10 +4,11 @@
 # This program is really helpful when you want to move files and forgot which files have been copied which are not.
 # This program is helpful for video / photo editors who constantly copy files from one device to another.
 # Place this program in Source Folder or provide SourFolder Address, Provide Destination Folder Full Address and LogFile.txt Full Address after that let the program do the magic
+#Version 2.0
 import os, shutil, copy, sys
 
 # Private Classes and Functions Definition Area Start
-
+version = 2.0
 errorsList = [
     [0, "Operation Performed Successfully"],
     [-1, "Invalid file name or address"],
@@ -171,6 +172,8 @@ class AutoCopier:
         else:
             return -1
         """
+def getVersion():
+    return version
 # API Area End
        
 # Actual Program Execution happens here
@@ -188,7 +191,8 @@ if __name__ == "__main__":
      \/__/         \/__/           \/__/       \/__/         \/__/         \/__/         \/__/       \/__/       \/__/         \/__/     
      __                               _           _                         
     /   __ _  _ _|_ _  _|   |_  \/   |_| ____  _ (_||_  _ __    |/ |_  _ __ 
-    \__ | (/_(_| |_(/_(_|   |_) /    | | | |||(_|__|| |(_|| |   |\ | |(_|| |                                                                                                                                  
+    \__ | (/_(_| |_(/_(_|   |_) /    | | | |||(_|__|| |(_|| |   |\ | |(_|| |    
+    VERSION: 2.0                                                                                                                              
                                                                                                                                         """)
     operation = input("[>] Do you want to Copy Files(copy) or Delete Files(del): ")
     if operation == "copy":
@@ -219,6 +223,7 @@ if __name__ == "__main__":
         # Getting list of files needed to be copied
         listt = logFileObj.filesNotInLog(fileNames)
         # Files are being copied
+        print("[+] Start coping | {} files will be copied".format(len(listt)))
         copied = __copyFile__(listt, destinationFolder)
         # Log File being updated
         logFileObj.updateLogFile(copied)
@@ -246,5 +251,6 @@ if __name__ == "__main__":
         files = os.listdir()
         files = [fi for fi in files if __fileExtensionCheck__(fi)]
         deletList = logFileObj.commonFiles(files)
+        print("[+] Start Deleting | {} files will be deleted".format(len(deletList)))
         __deleteFiles__(deletList)
         input("[>] Operation Completed | Press Enter Key to terminate")
